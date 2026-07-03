@@ -64,7 +64,7 @@ Windows 11 Pro Fleet - 35 devices (current: 11)
 
 ## Repo Structure
 
-Current structure reflects completed phases only:
+Current structure reflects completed and in-progress phases:
 
   azure-device-management/
   README.md
@@ -75,8 +75,11 @@ Current structure reflects completed phases only:
     users-and-groups.md
     sspr.md
     screenshots/
+  intune/
+    enrollment-configuration.md
+    screenshots/
 
-Folders for intune/, monitoring/, and terraform/ will be added as those phases are completed.
+Folders for monitoring/ and terraform/ will be added as those phases are completed.
 
 ---
 
