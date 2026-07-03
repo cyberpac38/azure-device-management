@@ -1,4 +1,4 @@
-# IMS Azure Device Management
+﻿# IMS Azure Device Management
 
 I managed 11 Windows workstations at a small business using Ansible, an Ubuntu server, and WinRM. It works — but everything breaks if a machine is off the local network, and onboarding takes 2 hours per device.
 
@@ -17,7 +17,7 @@ Fine for 11 machines. Breaks at 30.
 
 ---
 
-## What I'm Replacing It With
+## What I am Replacing It With
 
 | Before (Ansible) | After (Azure) |
 |-----------------|---------------|
@@ -32,61 +32,62 @@ Fine for 11 machines. Breaks at 30.
 
 ## Build Progress
 
-| Month | Focus | Status |
+| Phase | Focus | Status |
 |-------|-------|--------|
-| 1 | AZ-900 + Azure foundations + GitHub setup | ✅ Complete |
-| 2 | AZ-104 + Entra ID + VNet + NSG + Bastion | 🔄 In Progress |
-| 3 | Terraform — infrastructure as code | ⏳ Pending |
-| 4 | CI/CD pipeline — GitHub Actions | ⏳ Pending |
-| 5 | Portfolio + LinkedIn | ⏳ Pending |
-| 6 | Intune + Autopilot capstone deployment | ⏳ Pending |
+| 1 | Azure account + GitHub repo + security baseline | Complete |
+| 2 | Entra ID - identity, SSPR, Conditional Access | Complete |
+| 3 | Intune - compliance policies + configuration profiles | In Progress |
+| 4 | Device enrollment - Autopilot + Entra join | Pending |
+| 5 | Monitoring - Log Analytics + Azure Monitor alerts | Pending |
+| 6 | Terraform - infrastructure as code | Pending |
 
 ---
 
 ## Target Architecture
 
-```
-[ Microsoft Entra ID ]
-     | No standing admin access (PIM)
-     | MFA + compliant device required
-     |
-[ Microsoft Intune ]
-     | Compliance policies
-     | Configuration profiles
-     | BitLocker + Windows Hello for Business
-     |
-[ Windows 11 Pro Fleet — 35 devices ]
-     | Entra ID joined · Autopilot enrolled
-     | Defender for Endpoint
-```
+Microsoft Entra ID
+  - MFA enforced for all users
+  - Legacy authentication blocked
+  - Compliant device required (Report-only pending Intune enrollment)
 
----
+Microsoft Intune
+  - Compliance policies
+  - Configuration profiles
+  - BitLocker + Windows Hello for Business
 
-## Security
-
-- No standing admin privilege — PIM required to activate roles
-- Legacy authentication blocked from day one
-- Terraform state kept private — no public storage access
-- CI/CD authenticates via OIDC — no stored secrets in GitHub
-- Decisions documented in SECURITY.md
+Windows 11 Pro Fleet - 35 devices (current: 11)
+  - Entra ID joined
+  - Autopilot enrolled
+  - Defender for Endpoint
 
 ---
 
 ## Repo Structure
 
-```
-ims-azure-device-management/
-├── README.md
-├── SECURITY.md
-├── architecture/
-├── entra-id/
-├── intune/
-├── terraform/
-├── .github/workflows/
-└── scripts/
-```
+Current structure reflects completed phases only:
+
+  azure-device-management/
+  README.md
+  .gitignore
+  entra-id/
+    emergency-access-account.md
+    conditional-access-policies.md
+    users-and-groups.md
+    sspr.md
+    screenshots/
+
+Folders for intune/, monitoring/, and terraform/ will be added as those phases are completed.
 
 ---
 
-Martin Nurse — Cloud System & Quality Assurance Engineer  
+## Security
+
+- Break-glass emergency access account created and excluded from all CA policies
+- Legacy authentication blocked from day one (CA-002 set to On)
+- MFA enforced via Microsoft-managed and user-created Conditional Access policies
+- No credentials or tenant identifiers stored in this repository
+
+---
+
+Martin Nurse - Cloud System and Quality Assurance Engineer
 AZ-900 (June 2026) | AZ-104 in progress
