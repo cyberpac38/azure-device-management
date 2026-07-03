@@ -2,108 +2,103 @@
 
 ## Overview
 
-Conditional Access is the policy engine in Microsoft Entra ID that controls who can access what, from where, and under what conditions. It sits between the user and the resource — evaluating signals like user identity, device compliance, location, and risk level before granting access.
+Conditional Access is the policy engine in Microsoft Entra ID that controls who can access what, from where, and under what conditions. Every sign-in request is evaluated against all matching policies simultaneously — the most restrictive result wins. An explicit Block always overrides a Grant.
 
 The break-glass emergency access account is excluded from every policy in this document. See [emergency-access-account.md](./emergency-access-account.md) for the reasoning.
 
 ---
 
-## Microsoft-Managed Policies (Auto-Created)
+## Microsoft-Managed Policies
 
-When Microsoft 365 Business Premium was provisioned, Microsoft automatically created four Conditional Access policies. These are active by default.
+When Microsoft 365 Business Premium was provisioned, Microsoft automatically created four Conditional Access policies, all active by default.
 
 ### 1. Multifactor authentication for all users
 
-| Setting | Value |
-|---------|-------|
-| Created by | Microsoft |
-| State | On |
-| Included identities | All users |
-| Excluded identities | Break-glass account |
-| Cloud apps | All apps |
-| Requirement | MFA |
+Requires MFA for every user across all Microsoft cloud apps. Break-glass is excluded (1 user excluded, 0 groups, 0 roles).
 
-Requires MFA for every user across all Microsoft cloud apps. Break-glass is excluded.
+*Verification Log — Policy detail showing break-glass exclusion and State: On:*
+
+![MFA for all users - break-glass excluded](./screenshots/01-ca-policy-mfa-breakglass-excluded.png)
+
+> **Design Decision — Microsoft-Managed vs User-Created:** Microsoft-managed policies cannot be fully customised. A user-created equivalent (CA-001) is maintained in Report-only mode alongside this policy. This gives the organisation a path to full user control over enforcement without disabling Microsoft protection in the meantime.
 
 ### 2. Multifactor authentication for admins
 
-| Setting | Value |
-|---------|-------|
-| Created by | Microsoft |
-| State | On |
-| Included identities | All users with admin roles |
-| Excluded identities | Break-glass account |
-| Cloud apps | All apps |
-| Requirement | MFA |
-
-Adds a specific MFA requirement targeting accounts assigned admin roles. The break-glass account holds Global Administrator but is excluded — consistent with emergency access design.
+Targets accounts assigned admin roles. Break-glass holds Global Administrator but is excluded — consistent with emergency access design.
 
 ### 3. Multifactor authentication for Azure Management
 
-| Setting | Value |
-|---------|-------|
-| Created by | Microsoft |
-| State | On |
-| Included identities | All users |
-| Excluded identities | Break-glass account |
-| Cloud apps | Azure portal, Entra admin center, Intune admin center |
-| Requirement | MFA |
-
-Specifically targets sign-ins to Azure management portals. Break-glass is excluded.
+Targets sign-ins to the Azure portal, Entra admin center, and Intune admin center specifically. Break-glass is excluded.
 
 ### 4. Block legacy authentication
 
-| Setting | Value |
-|---------|-------|
-| Created by | Microsoft |
-| State | On |
-| Included identities | All users |
-| Client apps | Exchange ActiveSync, Other clients (legacy auth protocols) |
-| Grant | Block access |
+Blocks all legacy authentication protocols — Exchange ActiveSync, basic auth, SMTP, POP3, IMAP. These protocols cannot enforce MFA and are the most common vector for Microsoft 365 account compromise. No exclusions applied — there is no legitimate use case for legacy auth in a managed environment.
 
-Blocks all legacy authentication protocols — SMTP, POP3, IMAP, basic auth. These protocols cannot enforce MFA, making them the most common vector for Microsoft 365 account takeovers. This policy has no exclusions because legacy auth has no legitimate use case in a managed environment.
+**Real-world discovery:** Security Defaults were already disabled on this tenant because Microsoft-managed CA policies were active. Security Defaults and Conditional Access cannot run simultaneously — no manual action was required.
 
 ---
 
 ## User-Created Policies
 
-The following policies will be built as part of Phase 2. This section will be updated as each policy is created and tested.
+The following policies are built alongside the Microsoft-managed policies to give the organisation full control over enforcement. Each new policy starts in Report-only mode.
+
+*Verification Log — Complete policy list (Microsoft-managed + user-created):*
+
+![CA policies complete list](./screenshots/10-ca-policies-list.png)
+
+> *(Screenshot to be updated after CA-001, CA-002, CA-003 are confirmed created)*
 
 ### CA-001 — Require MFA for All Users
-- **Status:** Planned
-- Users: All users / Exclude: Break-glass
-- Apps: All cloud apps
-- Grant: Require MFA
-- Deployment: Report-only first, then Enabled
 
-### CA-002 — Block Legacy Authentication (User Policy)
-- **Status:** Planned
-- Users: All users
-- Client apps: Exchange ActiveSync + Other clients
-- Grant: Block access
-- Deployment: Enabled immediately
+| Setting | Value |
+|---------|-------|
+| Status | Report-only |
+| Users | All users |
+| Exclude | Break-glass account |
+| Apps | All cloud apps |
+| Grant | Require multifactor authentication |
+
+Mirrors the Microsoft-managed MFA policy. Running in Report-only to monitor impact before enforcement begins.
+
+### CA-002 — Block Legacy Authentication
+
+| Setting | Value |
+|---------|-------|
+| Status | Enabled |
+| Users | All users |
+| Client apps | Exchange ActiveSync, Other clients |
+| Grant | Block access |
+
+Mirrors the Microsoft-managed block policy. No exclusions — enabled immediately.
 
 ### CA-003 — Require Compliant Device
-- **Status:** Planned
-- Users: All users / Exclude: Break-glass
-- Apps: Microsoft 365 (Exchange, SharePoint, Teams)
-- Grant: Require device marked as compliant
-- Deployment: Report-only until all devices are enrolled and compliant in Intune, then Enabled
+
+| Setting | Value |
+|---------|-------|
+| Status | Report-only |
+| Users | All users |
+| Exclude | Break-glass account |
+| Apps | Office 365 (Exchange, SharePoint, Teams) |
+| Grant | Require device marked as compliant |
+
+> **Design Decision — Report-Only Until Intune Enrollment Complete:** Enabling this policy before all 11 IMS devices are enrolled and marked compliant in Intune would immediately block all staff from accessing Microsoft 365. Report-only mode allows the compliance posture to be monitored and corrected before enforcement begins. The policy switches to Enabled only after Phase 4 device enrollment is complete.
 
 ### CA-004 — Sign-In Risk Block
-- **Status:** Requires Entra ID P2 — not available on Business Premium
-- This policy will be documented here when the licence is upgraded to P2
-- Planned: Block access on high sign-in risk
+
+| Setting | Value |
+|---------|-------|
+| Status | Not available |
+| Reason | Requires Entra ID P2 — this tenant runs Business Premium (P1 only) |
+
+Will be implemented when the licence is upgraded to P2.
 
 ---
 
 ## Notes
 
-**Security Defaults vs Conditional Access:** These cannot run at the same time. When Microsoft-managed CA policies are active, Security Defaults are automatically disabled. This tenant runs on Conditional Access.
+**Testing approach:** Every new policy is created in Report-only mode first. This shows what would have been blocked without enforcing anything, allowing issues to be identified and corrected before users are impacted.
 
-**Policy order:** Conditional Access policies do not have a priority order — all matching policies are evaluated and the most restrictive result wins. An explicit Block always overrides a Grant.
-
-**Testing approach:** Each new policy is created in Report-only mode first. This lets you see what would have been blocked before enforcement begins, without locking anyone out.
+**Policy evaluation:** All matching policies are applied simultaneously. There is no priority order — a Block from one policy overrides a Grant from another.
 
 ---
 
