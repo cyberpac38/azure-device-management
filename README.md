@@ -17,7 +17,7 @@ Fine for 11 machines. Breaks at 30.
 
 ---
 
-## What I am Replacing It With
+## What I'm Replacing It With
 
 | Before (Ansible) | After (Azure) |
 |-----------------|---------------|
@@ -45,20 +45,23 @@ Fine for 11 machines. Breaks at 30.
 
 ## Target Architecture
 
-Microsoft Entra ID
-  - MFA enforced for all users
-  - Legacy authentication blocked
-  - Compliant device required (Report-only pending Intune enrollment)
+**Microsoft Entra ID**
 
-Microsoft Intune
-  - Compliance policies
-  - Configuration profiles
-  - BitLocker + Windows Hello for Business
+- MFA enforced for all users
+- Legacy authentication blocked
+- Compliant device required (Report-only pending Intune enrollment)
 
-Windows 11 Pro Fleet - 35 devices (current: 11)
-  - Entra ID joined
-  - Autopilot enrolled
-  - Defender for Endpoint
+**Microsoft Intune**
+
+- Compliance policies
+- Configuration profiles
+- BitLocker + Windows Hello for Business
+
+**Windows 11 Pro Fleet — 35 devices (current: 11)**
+
+- Entra ID joined
+- Autopilot enrolled
+- Defender for Endpoint
 
 ---
 
@@ -66,20 +69,34 @@ Windows 11 Pro Fleet - 35 devices (current: 11)
 
 Current structure reflects completed and in-progress phases:
 
-  azure-device-management/
-  README.md
-  .gitignore
-  entra-id/
-    emergency-access-account.md
-    conditional-access-policies.md
-    users-and-groups.md
-    sspr.md
-    screenshots/
-  intune/
-    enrollment-configuration.md
-    screenshots/
+```
+azure-device-management/
+├── README.md
+├── SECURITY.md
+├── .gitignore
+├── entra-id/
+│   ├── emergency-access-account.md
+│   ├── conditional-access-policies.md
+│   ├── users-and-groups.md
+│   ├── sspr.md
+│   └── screenshots/
+└── intune/
+    ├── enrollment-configuration.md
+    └── screenshots/
+```
 
-Folders for monitoring/ and terraform/ will be added as those phases are completed.
+Folders for `monitoring/` and `terraform/` will be added as those phases are completed.
+
+## Documentation
+
+| Document | Covers |
+|----------|--------|
+| [SECURITY.md](./SECURITY.md) | Security posture, known gaps and accepted risks, operational rules |
+| [Emergency Access Account](./entra-id/emergency-access-account.md) | Break-glass account, CA exclusions, sign-in alerting |
+| [Users and Security Groups](./entra-id/users-and-groups.md) | 11 user accounts, 3 role-based security groups |
+| [Conditional Access Policies](./entra-id/conditional-access-policies.md) | 4 Microsoft-managed + 3 user-created policies |
+| [Self-Service Password Reset](./entra-id/sspr.md) | SSPR scope, methods, registration, notifications |
+| [Intune Enrollment Configuration](./intune/enrollment-configuration.md) | MDM auto-enrollment, platform restrictions |
 
 ---
 
