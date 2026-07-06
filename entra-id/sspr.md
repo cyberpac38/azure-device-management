@@ -16,7 +16,7 @@ Self-Service Password Reset allows users to reset their own passwords without ca
 ![SSPR Properties — scope set to All](./screenshots/09-sspr-properties.png)
 
 > **Deviation: Scope set to All instead of a targeted group**
-> The original plan was to target the three IMS security groups (IMS-IT-Admins, IMS-Standard-Users, IMS-Management). However, the SSPR Properties tab only accepts a single group. In a production environment the correct fix is to create a wrapper group containing all three groups and target that. For this lab tenant, with only 11 IMS users and a break-glass account — none of whom should be excluded from SSPR — setting scope to All is the practical equivalent. The break-glass account does not use SSPR; its password is stored offline.
+> The original plan was to target the three IMS security groups (`grp-ims-it-admins`, `grp-ims-supervisors`, `grp-ims-standard-users` — see [users-and-groups.md](./users-and-groups.md)). However, the SSPR Properties tab only accepts a single group. In a production environment the correct fix is to create a wrapper group containing all three groups and target that. For this lab tenant, with only 11 IMS users and a break-glass account — none of whom should be excluded from SSPR — setting scope to All is the practical equivalent. The break-glass account does not use SSPR; its password is stored offline.
 
 ---
 
