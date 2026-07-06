@@ -10,6 +10,18 @@ The break-glass emergency access account is excluded from every policy in this d
 
 *7 policies total as of July 2026: 4 Microsoft-managed (all On) + 3 user-created (CA-001 Report-only, CA-002 On, CA-003 Report-only)*
 
+### Policy Inventory
+
+| Policy | Type | State | Purpose |
+|--------|------|-------|---------|
+| Multifactor authentication for all users | Microsoft-managed | On | MFA for all users, all apps |
+| Multifactor authentication for admins | Microsoft-managed | On | MFA for admin role holders |
+| Multifactor authentication for Azure Management | Microsoft-managed | On | MFA for Azure/Entra/Intune portals |
+| Block legacy authentication | Microsoft-managed | On | Block legacy auth protocols |
+| CA-001 — Require MFA for All Users | User-created | Report-only | Admin-controlled MFA duplicate |
+| CA-002 — Block Legacy Authentication | User-created | On | Admin-controlled legacy auth block |
+| CA-003 — Require Compliant Device | User-created | Report-only | Compliant device for Office 365 (pending Phase 4) |
+
 ---
 
 ## Microsoft-Managed Policies (Auto-Created)
@@ -149,10 +161,14 @@ Blocks all legacy authentication protocols. These protocols cannot enforce MFA, 
 
 ---
 
-### CA-004 — Sign-In Risk Block
-- **Status:** Requires Entra ID P2 — not available on Business Premium
-- Planned: Block access on high sign-in risk
-- Will be documented here when licence is upgraded to P2
+### CA-004 — Sign-In Risk Block (Planned)
+
+| Setting | Value |
+|---------|-------|
+| Status | Not created — requires Entra ID P2, not available on Business Premium |
+| Planned grant | Block access on high sign-in risk |
+
+Will be documented here if/when the licence is upgraded to P2.
 
 ---
 

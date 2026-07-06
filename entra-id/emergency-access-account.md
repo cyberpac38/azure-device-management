@@ -26,14 +26,14 @@ The break-glass account is excluded from all Conditional Access policies. This i
 
 > **Design Decision — Permanent CA Exclusion:** The break-glass account is the last line of defence against a CA misconfiguration lockout. If it were subject to the same policies as other accounts, a badly configured rule could lock it out simultaneously. The account is excluded from every policy created in this project — Microsoft-managed and user-created alike.
 
-The account is excluded from the following policies:
+The account is excluded from the following policies (full policy details in [conditional-access-policies.md](./conditional-access-policies.md)):
 
 | Policy | Type | Break-Glass Excluded |
 |--------|------|---------------------|
 | Multifactor authentication for all users | Microsoft-managed | Yes |
 | Multifactor authentication for admins | Microsoft-managed | Yes |
 | Multifactor authentication for Azure Management | Microsoft-managed | Yes |
-| Block legacy authentication | Microsoft-managed | N/A |
+| Block legacy authentication | Microsoft-managed | N/A — account uses modern auth only, so no exclusion is needed |
 
 ---
 
@@ -74,7 +74,7 @@ An alert fires any time the break-glass account successfully signs in. The alert
 ```kql
 SigninLogs
 | where UserPrincipalName == "[EMERGENCY-ACCOUNT-UPN]"
-| where ResultType == 0
+| where ResultType == 0  // 0 = successful sign-in
 ```
 
 > Replace `[EMERGENCY-ACCOUNT-UPN]` with the actual UPN. Never publish real account usernames in a public repository.

@@ -30,11 +30,13 @@ All accounts use placeholder display names and usernames. Real staff names exist
 
 Three Entra ID security groups were created to segment users by role. Membership type is Assigned — users are added manually, not dynamically.
 
-| Group Name | Type | Members |
-|-----------|------|---------|
-| grp-ims-it-admins | Security | 2 |
-| grp-ims-supervisors | Security | 3 |
-| grp-ims-standard-users | Security | 6 |
+| Group Name | Type | Members | Intended Use |
+|-----------|------|---------|--------------|
+| grp-ims-it-admins | Security | 2 | Elevated access to Azure resources; admin policy targeting |
+| grp-ims-supervisors | Security | 3 | Intermediate access; supervisor-specific policies |
+| grp-ims-standard-users | Security | 6 | Restricted to approved applications; baseline policies |
+
+These groups are the targeting foundation for [Conditional Access](./conditional-access-policies.md), [SSPR](./sspr.md), and upcoming Intune device assignment.
 
 *Verification Log — Three IMS security groups confirmed in Entra ID All Groups:*
 
