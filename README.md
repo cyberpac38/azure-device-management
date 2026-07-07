@@ -36,8 +36,8 @@ Fine for 11 machines. Breaks at 30.
 |-------|-------|--------|
 | 1 | Azure account + GitHub repo + security baseline | Complete |
 | 2 | Entra ID - identity, SSPR, Conditional Access | Complete |
-| 3 | Intune - compliance policies + configuration profiles | In Progress |
-| 4 | Device enrollment - Autopilot + Entra join | Pending |
+| 3 | Intune - compliance policies + configuration profiles | Complete |
+| 4 | Device enrollment - Autopilot + Entra join | In Progress |
 | 5 | Monitoring - Log Analytics + Azure Monitor alerts | Pending |
 | 6 | Terraform - infrastructure as code | Pending |
 
@@ -82,6 +82,8 @@ azure-device-management/
 │   └── screenshots/
 └── intune/
     ├── enrollment-configuration.md
+    ├── compliance-policies.md
+    ├── configuration-profiles.md
     └── screenshots/
 ```
 
