@@ -122,6 +122,10 @@ The pilot device landed in the compliance grace period with two failing checks -
 
 **Process change for the batch:** the fleet build checklist now disconnects the ISO immediately after Windows installation, before OOBE. The failure class is eliminated for devices 2-11.
 
+**Final state:** after the next attestation cycle, all 11 compliance checks report Compliant - BitLocker and Secure Boot included. The pilot device went enrolled → grace period → diagnosed → remediated → compliant without any manual encryption steps on the device itself.
+
+![All compliance checks green](./screenshots/33-pilot-compliant.png)
+
 ---
 
 ## Next
