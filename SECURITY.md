@@ -1,6 +1,6 @@
 # Security Posture
 
-Current security state of the IMS Azure environment, the gaps that are known and accepted, and the operational rules that keep it that way. Configuration detail lives in the individual documents — this file is the honest summary.
+Current security state of the IMS Azure environment, the gaps that are known and accepted, and the operational rules that keep it that way. Configuration detail lives in the individual documents - this file is the honest summary.
 
 ---
 
@@ -8,9 +8,9 @@ Current security state of the IMS Azure environment, the gaps that are known and
 
 | Control | State | Detail |
 |---------|-------|--------|
-| MFA — all users | Enforced | Microsoft-managed policy On; user-controlled duplicate CA-001 in Report-only |
+| MFA - all users | Enforced | Microsoft-managed policy On; user-controlled duplicate CA-001 in Report-only |
 | Legacy authentication | Blocked | Microsoft-managed policy On + CA-002 On (defence in depth) |
-| Compliant device required | Report-only | CA-003 — switches On in Phase 4 after Intune enrollment |
+| Compliant device required | Report-only | CA-003 - switches On in Phase 4 after Intune enrollment |
 | Break-glass account | Active | Excluded from all CA policies; Severity 0 alert on any sign-in |
 | SSPR | Enabled (all users) | 1 method, security questions disabled, 180-day re-confirmation |
 | MDM auto-enrollment | All users | Devices auto-enroll in Intune at Entra join |
@@ -24,7 +24,7 @@ Full configuration detail: [conditional-access-policies.md](./entra-id/condition
 ## Known Gaps and Accepted Risks
 
 - **Sign-in risk policies (CA-004)** require Entra ID P2, which is not included in Business Premium. Deferred until a licence upgrade; documented as a planned policy in the Conditional Access doc.
-- **Break-glass MFA** uses Microsoft Authenticator as a lab workaround. The production answer is a FIDO2 hardware security key stored physically alongside the printed password — phone-independent and isolated from normal infrastructure.
+- **Break-glass MFA** uses Microsoft Authenticator as a lab workaround. The production answer is a FIDO2 hardware security key stored physically alongside the printed password - phone-independent and isolated from normal infrastructure.
 - **PIM is unavailable** on Business Premium, so the break-glass Global Administrator role is permanent by necessity rather than just-in-time.
 - **CA-001 and CA-003 are Report-only.** MFA enforcement currently depends on the Microsoft-managed policies; CA-001 switches On after those are reviewed, and CA-003 switches On after Phase 4 device enrollment. Until then, device compliance is not enforced.
 
@@ -51,8 +51,8 @@ Relevant to why the gaps above exist:
 
 | Item | Value |
 |------|-------|
-| Licence | Microsoft 365 Business Premium (Entra ID P1 — no P2 features) |
-| Tenant type | Cloud-only — no on-premises AD, no Entra Connect |
+| Licence | Microsoft 365 Business Premium (Entra ID P1 - no P2 features) |
+| Tenant type | Cloud-only - no on-premises AD, no Entra Connect |
 | Fleet | 11 × Windows 11 Pro (target 35) |
 | MDM authority | Microsoft Intune |
 

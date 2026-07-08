@@ -1,6 +1,6 @@
 ﻿# IMS Azure Device Management
 
-I managed 11 Windows workstations at a small business using Ansible, an Ubuntu server, and WinRM. It works — but everything breaks if a machine is off the local network, and onboarding takes 2 hours per device.
+I managed 11 Windows workstations at a small business using Ansible, an Ubuntu server, and WinRM. It works - but everything breaks if a machine is off the local network, and onboarding takes 2 hours per device.
 
 This project moves that setup to Microsoft Azure. Built on the real office infrastructure, documented as I go.
 
@@ -10,7 +10,7 @@ This project moves that setup to Microsoft Azure. Built on the real office infra
 
 - Machines have to be on-site to receive updates or config changes
 - Onboarding requires physical access and 6 Ansible playbooks
-- No centralised identity — everyone has local accounts
+- No centralised identity - everyone has local accounts
 - No remote wipe, no compliance reporting, no cloud backup
 
 Fine for 11 machines. Breaks at 30.
@@ -57,7 +57,7 @@ Fine for 11 machines. Breaks at 30.
 - Configuration profiles
 - BitLocker + Windows Hello for Business
 
-**Windows 11 Pro Fleet — 35 devices (current: 11)**
+**Windows 11 Pro Fleet - 35 devices (current: 11)**
 
 - Entra ID joined
 - Autopilot enrolled
@@ -84,6 +84,7 @@ azure-device-management/
     ├── enrollment-configuration.md
     ├── compliance-policies.md
     ├── configuration-profiles.md
+    ├── device-enrollment.md
     └── screenshots/
 ```
 
@@ -107,9 +108,4 @@ Folders for `monitoring/` and `terraform/` will be added as those phases are com
 - Break-glass emergency access account created and excluded from all CA policies
 - Legacy authentication blocked from day one (CA-002 set to On)
 - MFA enforced via Microsoft-managed and user-created Conditional Access policies
-- No credentials or tenant identifiers stored in this repository
-
----
-
-Martin Nurse - Cloud System and Quality Assurance Engineer
-AZ-900 (June 2026) | AZ-104 in progress
+- No credentials or tenant identifiers
