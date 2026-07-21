@@ -128,9 +128,41 @@ The pilot device landed in the compliance grace period with two failing checks -
 
 ---
 
+## Rebuild Note (VM-STAFF01 rebuilt as IMS-65395)
+
+After the pilot completed, VM-STAFF01 stopped booting: the guest boot files were corrupted by repeated virtual-CPU faults in the lab hypervisor, producing a deterministic triple fault a fraction of a second into the Windows Boot Manager handoff. Rather than attempt a fragile WinRE recovery of a BitLocker-locked volume, the VM was wiped and reinstalled in place.
+
+Because Autopilot registration is keyed to the hardware serial rather than the OS install, no re-registration was needed. The rebuilt VM kept its serial, matched the existing Autopilot record, and re-ran the `IMS-UserDriven-EntraJoin` profile automatically. The only manual cleanup was deleting the stale Intune device object (`IMS-38106`) so the fresh enrollment would not collide with it.
+
+The device re-enrolled hands-off as `IMS-65395`, silent BitLocker encryption ran clean (ISO disconnected before OOBE, per the batch checklist), and it returned to fully Compliant on the first evaluation cycle - no Event 853 recurrence.
+
+> **Design Decision - rebuild over repair:** With the compliance evidence and full troubleshooting log already captured on IMS-38106, a booting copy of that exact device object added no portfolio value. A clean rebuild was faster and more reliable than repairing corrupted boot files, and it doubled as the first live run of the batch onboarding procedure. Any one of the fleet VMs can serve as the surviving compliant demo device.
+
+> **Field note - Autopilot idempotency:** Wipe-and-re-enroll cost zero reconfiguration. The group tag on the hardware hash drove group membership, profile, and every policy exactly as on first enrollment - the same property that makes fleet-wide re-provisioning a non-event.
+
+*Verification Log - IMS-65395 (rebuilt VM-STAFF01) is shown back at Compliant in the batch 1 fleet view below.*
+
+---
+
+## Batch 1 Onboarding (itsadmin01, itsadmin02, supervisor01)
+
+With the pilot proven, the first production batch onboarded three devices. Registration used the file-based hash method rather than the interactive `-Online` path: the Web Account Manager sign-in window opens hidden behind OOBE and the upload fails silently, so each device exports its hash to a CSV (carrying the `IMS-Fleet` group tag), the CSV moves to the host by USB, and it imports in the portal. Full procedure in the [onboarding runbook](./device-onboarding-runbook.md).
+
+*Verification Log - all four hashes registered, Profile status Assigned under IMS-Fleet:*
+
+![Autopilot devices assigned](./screenshots/34-batch1-autopilot-assigned.png)
+
+*Verification Log - the full pilot-plus-batch-1 fleet (staff01, supervisor01, itsadmin01, itsadmin02) reporting Compliant (primary-user column redacted):*
+
+![Batch 1 devices compliant](./screenshots/35-batch1-all-compliant.png)
+
+> **Field note - group tag casing:** One device's tag was entered as `IMS-fLEET`. It still joined the dynamic group and enrolled, because Entra dynamic-membership string-value comparison is case-insensitive (property names are not). The mismatch is cosmetic only; the tag is being normalized to `IMS-Fleet` for a tidy fleet view.
+
+---
+
 ## Next
 
-Batch enrollment of the remaining 10 devices (itsadmin01-02, supervisor01-03, staff02-06), then flipping CA-003 (require compliant device) from report-only to On.
+Batch 2 onward (supervisor02-03, staff02-06), then flipping CA-003 (require compliant device) from report-only to On once all 11 devices are enrolled and compliant.
 
 ---
 

@@ -39,20 +39,32 @@ Repeatable procedure for onboarding one fleet device, written from the pilot (VM
 
 VM > Settings > CD/DVD: untick **both** "Connected" and "Connect at power on". BitLocker refuses silent encryption while bootable media is attached (Event 853). Doing this at OOBE, before enrollment, prevents the pilot's failure entirely.
 
-### 4. Register the hardware hash
+### 4. Register the hardware hash (file method - the reliable path)
 
-At the country/region screen: click inside the VM, Shift+F10 > type `powershell` > Enter, then:
+The `-Online` interactive registration does NOT work in this pilot environment: the Web Account Manager (WAM) sign-in window opens hidden behind OOBE and the upload silently does nothing, leaving the device unregistered with no error. The reliable path is to export the hash to a file and import it in the portal - no interactive sign-in involved.
+
+At the country/region screen: click inside the VM, Shift+F10 > type `powershell` > Enter. Run these in the SAME window, and type the third line in full (the execution-policy bypass dies with the session, and Tab-completion mangles the script name to `Get-WindowsAutoPilot.ps1`):
 
 ```powershell
 Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass -Force
 Install-Script -Name Get-WindowsAutoPilotInfo -Force
-Get-WindowsAutoPilotInfo.ps1 -Online -GroupTag "IMS-Fleet"
+Get-WindowsAutoPilotInfo.ps1 -OutputFile C:\HWID.csv -GroupTag "IMS-Fleet"
 ```
 
-- Answer `Y` to the NuGet prompt
-- Sign in as the tenant admin when the window appears; choose **"No, this app only"** on the stay-signed-in prompt
-- Wait for **"1 devices imported successfully"** then **"All devices synced"** (~2-4 min)
-- The execution policy line must be re-run in every new PowerShell session - it does not persist
+- Answer `Y` to the NuGet prompt; wait for a clean prompt before the third line
+- Success looks like `Gathered details for device with serial number: VMware-...`; confirm the file with `dir C:\HWID.csv`
+- Type the `-GroupTag` value carefully - a casing slip like `IMS-fLEET` still assigns (Entra string-value comparison is case-insensitive) but displays inconsistently against the other devices
+
+Move the file to the host and import it:
+
+1. Attach a USB drive to the VM: VM > Removable Devices > [drive] > Connect (Connect to a virtual machine)
+2. Find its drive letter with `Get-Volume`, then `copy C:\HWID.csv <USBletter>:\`
+3. Return the USB to the host: VM > Removable Devices > [drive] > Disconnect (Connect to Host)
+4. Portal: Devices > Enrollment > Windows > Windows Autopilot > Devices > **Import** > select HWID.csv > Import > **Sync**
+
+The group tag travels inside the CSV, so no manual tagging is needed. Import processing lags ~10-15 minutes before the device appears - Sync and Refresh, do not assume it failed early.
+
+> **Field note - why not -Online:** `-Online` needs an interactive Microsoft Graph sign-in through WAM, whose window hides behind the OOBE screen and fails silently here. The file export needs no sign-in and cannot fail that way. This replaced the original `-Online` procedure after it cost a full session of retries on the first batch.
 
 ### 5. Wait for profile assignment
 
@@ -80,17 +92,17 @@ After verification the VM stays powered off except a weekly boot so it checks in
 
 | Device | User | Hash imported | Assigned | Enrolled | Key escrowed | Compliant |
 |--------|------|--------------|----------|----------|--------------|-----------|
-| VM-STAFF01 | staff01 | Done | Done | Done (IMS-38106) | Done | Done |
+| VM-STAFF01 | staff01 | Done | Done | Done (IMS-65395) | Done | Done |
 | VM-STAFF02 | staff02 | | | | | |
 | VM-STAFF03 | staff03 | | | | | |
 | VM-STAFF04 | staff04 | | | | | |
 | VM-STAFF05 | staff05 | | | | | |
 | VM-STAFF06 | staff06 | | | | | |
-| VM-SUPERVISOR01 | supervisor01 | | | | | |
+| VM-SUPERVISOR01 | supervisor01 | Done | Done | Done (IMS-78938) | Done | Done |
 | VM-SUPERVISOR02 | supervisor02 | | | | | |
 | VM-SUPERVISOR03 | supervisor03 | | | | | |
-| VM-ITSADMIN01 | itsadmin01 | | | | | |
-| VM-ITSADMIN02 | itsadmin02 | | | | | |
+| VM-ITSADMIN01 | itsadmin01 | Done | Done | Done (IMS-84200) | Done | Done |
+| VM-ITSADMIN02 | itsadmin02 | Done | Done | Done (IMS-98067) | Done | Done |
 
 When all 11 rows are complete: flip CA-003 (require compliant device) from report-only to On.
 
